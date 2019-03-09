@@ -39,29 +39,31 @@ grad = zeros(size(theta));
 
 
 
-
-y1 = sigmoid(X * theta);
-J = sum( -y .* log(y1) - (1 - y) .* log(1 - y1) )/m ;
-grad = X' * ( y1 - y ) /m;
+z = X * theta;
+y1 = sigmoid(z);
+[m n] = size(X);
+first = -y.*log(y1);
+second = (1-y) .* log(1-y1);
+J = ( -y' * log(y1) - (1 - y)' * log(1 - y1) )/m ;
+grad = X' * ( y1 - y ) ;
 
 theta1 = theta;
 theta1(1) = 0;
-J = J + lambda * sum(theta1.^2) /(2* m);
-grad = grad + theta1 .* lambda ./ m;
+J = first + lambda * (theta1' * theta1) /(2* m);
+% grad = (grad + theta1 .* lambda) ./ m;
+grad = m^-1 * ((y1-y)'*X)'+theta1*lambda/m; 
 
-%%
-% 注：求向量每个元素的平方的和的两种方法有少量误差，如：
-% >> vv = [1:0.0000001:2];
-% >> vv*vv'
-% ans =
-%      2.333333583333336e+07
-% >> sum(vv.^2)
-% ans =
-%      2.333333583333349e+07
-% >> 
-%%
-
-
+% z=X*theta;
+% h=sigmoid(z);
+% first=-y.*log(h);
+% second=(1-y).*log(1-h);
+% 
+% theta(1)=0;
+% other=sum(theta.^2)*lambda/(2*m);
+% %tmp = lambda/(2*m)*sum(theta.^2);
+% J=sum(first-second)/m+other;
+% 
+% grad = m^-1 * ((h-y)'*X)'+theta*lambda/m; 
 
 % =============================================================
 
