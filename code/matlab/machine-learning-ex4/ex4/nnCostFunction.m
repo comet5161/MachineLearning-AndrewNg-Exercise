@@ -1,3 +1,4 @@
+
 function [J grad] = nnCostFunction(nn_params, ...
                                    input_layer_size, ...
                                    hidden_layer_size, ...
@@ -62,20 +63,54 @@ Theta2_grad = zeros(size(Theta2));
 %               and Theta2_grad from Part 2.
 %
 
+%% 求Cost
+A1 = [ones(m,1), X]'; %特征数 x 样本数
+Z2= Theta1 * A1; % 第2层单元数 x 样本数
+A2 = [ones(1, size(Z2,2)); sigmoid(Z2)];
+Z3= Theta2 * A2;  % 第3层单元数 x 样本数
+A3 = sigmoid(Z3);
+H = A3; % 分类数 x 样本
 
+Y = zeros(m, num_labels); % 样本数 x 分类数
+% index=sub2ind(size(A),B(:,1),B(:,2));
+index = sub2ind(size(Y), [1:m]', y); 
+Y( index ) = 1;
+J = sum(-Y' .* log(H) - (1-Y)' .* log(1 - H) )   ;
+J = sum(J) / m;
+ J = J + ( sum( sum(Theta1(:, 2:end) .^2 ) ) + sum( sum(Theta2(:,2:end)  .^2) ) ) * lambda / (2 * m);
 
+%% 实现反向传播
 
+%[第3单元数 x 样本数]
+Delta3 = H - Y'; %（大写Δ，小写δ)
+% A2 [第3单元数 x 样本数]
 
+Delta3_3D = reshape(Delta3, [ size(Delta3, 1), 1, size(Delta3, 2) ] );
 
+% 将 A2转为3维矩阵
+A2_3D = reshape(A2, [size(A2, 1), 1, size(A2, 2)]); % 把样本数量放到第3维
+A2_3D = permute(A2_3D, [2, 1, 3]); % 第一维与第二维转置
+% Theta2_grad = （每个样本 Delta3 * a2'的和）/ 3。
+%[第3单元数 x 1 x 样本数] x [1 x 第2单元数 x 样本数]
+Theta2_grad = sum( bsxfun(@times, Delta3_3D , A2_3D), 3) / m; 
 
+%  [第2单元数 x 第3层单元数 ] x [第3单元数 x 样本数] dot [ 第二单元数 x 样本数] 
+Delta2 = Theta2(:, 2:end)' * Delta3 .* sigmoidGradient(Z2); % Theta2去掉偏置项。
 
+Delta2_3D = reshape(Delta2, [size(Delta2, 1), 1, size(Delta2, 2)] );
 
+A1_3D = reshape(A1, [size(A1, 1), 1, size(A1, 2)] );
+A1_3D = permute(A1_3D, [2, 1, 3]);
 
+Theta1_grad = sum( bsxfun(@times, Delta2_3D,  A1_3D), 3) / m;
 
+Theta1_temp = Theta1;
+Theta2_temp = Theta2;
+Theta1_temp(:, 1) = 0;
+Theta2_temp(:, 1) = 0;
 
-
-
-
+Theta1_grad = Theta1_grad + Theta1_temp * lambda / m;
+Theta2_grad = Theta2_grad + Theta2_temp * lambda /m;
 
 
 
@@ -89,3 +124,4 @@ grad = [Theta1_grad(:) ; Theta2_grad(:)];
 
 
 end
+
