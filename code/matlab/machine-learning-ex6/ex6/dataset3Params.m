@@ -23,7 +23,23 @@ sigma = 0.3;
 %        mean(double(predictions ~= yval))
 %
 
-
+C_ary = [0.01, 0.03, 0.1, 0.3, 1, 3, 10, 30];
+sigma_ary = C_ary;
+error = 99999999999999999;
+for i = 1: length(C_ary)
+    C_temp = C_ary(i);
+    for j = 1:length(C_ary)
+        sigma_temp = sigma_ary(j);
+        model = svmTrain(X, y, C_temp, @(x1, x2)gaussianKernel(x1, x2, sigma_temp));
+        y_p = svmPredict(model, Xval);
+        error_temp = mean(double(y_p ~= yval));
+        if error_temp < error
+            sigma = sigma_temp;
+            C = C_temp;
+            error = error_temp;
+        end
+    end
+end
 
 
 

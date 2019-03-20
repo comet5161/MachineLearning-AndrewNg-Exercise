@@ -16,6 +16,13 @@ for i = 1:size(X1, 2)
    vals(:, i) = svmPredict(model, this_X);
 end
 
+% % Ïàµ±ÓÚ
+% for i = 1: 100
+%     for j = 1:100
+%         vals(i, j) = svmPredict(model, [X1(i), X2(j)]);
+%     end
+% end
+
 % Plot the SVM boundary
 hold on
 contour(X1, X2, vals, [0.5 0.5], 'b');

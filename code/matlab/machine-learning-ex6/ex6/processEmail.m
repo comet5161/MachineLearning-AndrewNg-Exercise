@@ -57,14 +57,15 @@ l = 0;
 while ~isempty(email_contents)
 
     % Tokenize and also get rid of any punctuation
+    
     [str, email_contents] = ...
        strtok(email_contents, ...
-              [' @$/#.-:&*+=[]?!(){},''">_<;%' char(10) char(13)]);
+              [' @$/#.-:&*+=[]?!(){},''">_<;%' char(10) char(13)]); % 提取单个单词？
    
     % Remove any non alphanumeric characters
     str = regexprep(str, '[^a-zA-Z0-9]', '');
 
-    % Stem the word 
+    % Stem the word %提取词干？
     % (the porterStemmer sometimes has issues, so we use a try catch block)
     try str = porterStemmer(strtrim(str)); 
     catch str = ''; continue;
@@ -98,7 +99,12 @@ while ~isempty(email_contents)
     %
 
 
-
+    for j = 1:length(vocabList)
+        if strcmp(str, vocabList{j})
+            word_indices = [word_indices; j];
+            break;
+        end
+    end
 
 
 
