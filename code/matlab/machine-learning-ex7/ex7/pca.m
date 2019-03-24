@@ -20,6 +20,8 @@ S = zeros(n);
 %       number of examples).
 %
 
+Sigma = X' * X ./m;
+[U, S, ~] = svd(Sigma); %返回的U中的特征向量相互正交（相互垂直且均为单位长度）
 
 
 

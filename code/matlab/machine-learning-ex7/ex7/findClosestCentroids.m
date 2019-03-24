@@ -21,6 +21,12 @@ idx = zeros(size(X,1), 1);
 % Note: You can use a for-loop over the examples to compute this.
 %
 
+[m, n] = size(centroids);
+centroids = reshape(centroids, [m, n, 1]);
+centroids = permute(centroids, [3, 2, 1]); % 第一维与第三维转置
+Y = bsxfun(@minus, X, centroids);
+Z = sum(Y .^2, 2); % 第3维为样本与不同中心点的距离
+[~, idx] = min(Z, [], 3);
 
 
 

@@ -27,6 +27,10 @@ centroids = zeros(K, n);
 %
 
 
+for i = 1:K
+    pos = idx == i;
+    centroids(i, :) = mean(X(pos, :), 1);
+end
 
 
 
