@@ -40,13 +40,18 @@ Theta_grad = zeros(size(Theta));
 %                     partial derivatives w.r.t. to each element of Theta
 %
 
+% [电影数 x 特征数] x [特征数 x 用户数]
+Y_predict = X * Theta';
+D = (Y_predict - Y) .* R;
+J = D.^2 / 2;
+J = sum(sum(J)) + sum(sum(Theta.^2))*lambda/2 + sum(sum(X.^2))*lambda/2;
 
-
-
-
-
-
-
+% [电影数 x 用户数] x [用户数 x 特征数]
+X_grad = D * Theta;
+X_grad = X_grad + lambda.*X;
+% [用户数 x 电影数] x [电影数 x 特征数] 
+Theta_grad = D' * X;
+Theta_grad = Theta_grad + lambda.*Theta;
 
 
 

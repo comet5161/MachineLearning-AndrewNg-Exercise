@@ -32,7 +32,7 @@ load ('ex8_movies.mat');
 
 %  From the matrix, we can compute statistics like average rating.
 fprintf('Average rating for movie 1 (Toy Story): %f / 5\n\n', ...
-        mean(Y(1, R(1, :))));
+        mean(Y(1, R(1, :)))); % R中的数为逻辑类型，所以可以用来筛选Y的元素。
 
 %  We can "visualize" the ratings matrix by plotting it with imagesc
 imagesc(Y);
@@ -40,6 +40,7 @@ ylabel('Movies');
 xlabel('Users');
 
 fprintf('\nProgram paused. Press enter to continue.\n');
+colorbar;
 pause;
 
 %% ============ Part 2: Collaborative Filtering Cost Function ===========
@@ -196,8 +197,10 @@ options = optimset('GradObj', 'on', 'MaxIter', 100);
 
 % Set Regularization
 lambda = 10;
-theta = fmincg (@(t)(cofiCostFunc(t, Ynorm, R, num_users, num_movies, ...
-                                num_features, lambda)), ...
+% 下面计算costFun的Y是不是应该换成Ynorm?用Y，最高推荐评分约8.5，与作业指导上的一致，
+% 换成Ynorm，最高推荐评分5.0，
+costFun = @(t) cofiCostFunc(t, Y, R, num_users, num_movies,num_features, lambda);
+theta = fmincg (costFun, ...
                 initial_parameters, options);
 
 % Unfold the returned theta back into U and W
@@ -235,3 +238,5 @@ for i = 1:length(my_ratings)
                  movieList{i});
     end
 end
+
+%% 有个疑问，预测算法是如何保证预测的评分在0-5的范围内的？

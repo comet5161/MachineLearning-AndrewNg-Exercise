@@ -24,8 +24,17 @@ for epsilon = min(pval):stepsize:max(pval)
     %       of 0's and 1's of the outlier predictions
 
 
+	y_predict = pval < epsilon;
+	%true_positive (true anomaly)
+	tp = sum(yval == 1); 
+	% false_positive
+	fp = sum( yval == 0 & y_predict == 1 );
+	% false_negative
+	fn = sum( yval == 1 & y_predict == 0);
 
-
+	prec = tp/(tp+fp);
+	rec = tp/(tp+fn);
+	F1 = 2*prec*rec/(prec+rec);
 
 
 
